@@ -65,10 +65,22 @@ export async function handleLogin(req, res) {
     res.status(500).json({ msg: "Internal Server Error" });
   }
 }
-export async function handleLogout(req,res){
+export async function handleLogout(req, res) {
   try {
     res.cookie("jwt", "", { maxAge: 0 });
-    res.status(201).json({msg: "Logout Successfull"})
+    res.status(201).json({ msg: "Logout Successfull" });
+  } catch (error) {
+    res.status(500).json({ msg: "Internal Server Error" });
+  }
+}
+
+export async function handleGetMe(req, res) {
+  try {
+    const user = req.user;
+    if (!user) {
+      return res.status(401).json({ error: "User not found" });
+    }
+    res.status(200).json(user);
   } catch (error) {
     res.status(500).json({ msg: "Internal Server Error" });
   }

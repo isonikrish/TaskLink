@@ -5,8 +5,8 @@ import { useMainContext } from '../contexts/MainContext';
 
 function Task({ task, date, description, id, startTime, endTime, status }) {
     const [finalDate, setFinalDate] = useState(null);
-    const [loading, setLoading] = useState(false); 
-    const { handleTaskStatus,handleDeleteTask } = useMainContext();
+    const [loading, setLoading] = useState(false);
+    const { handleTaskStatus, handleDeleteTask } = useMainContext();
     const [importantTask, setImportantTask] = useState(false);
 
     function updateDate() {
@@ -31,12 +31,14 @@ function Task({ task, date, description, id, startTime, endTime, status }) {
         setLoading(false);
     };
 
+    // Function to get important status from localStorage
     const getImportantTasks = () => {
         const tasks = JSON.parse(localStorage.getItem("tasks")) || [];
-        const taskItem = tasks.find((task) => task.id === id);  
-        if (taskItem && taskItem.isImportant) {
-            setImportantTask(true);
+        const taskItem = tasks.find((task) => task.id === id);
+        if (taskItem) {
+            setImportantTask(taskItem.isImportant || false);
         } else {
+
             setImportantTask(false);
         }
     };
@@ -45,14 +47,29 @@ function Task({ task, date, description, id, startTime, endTime, status }) {
         getImportantTasks();
     }, [id]);
 
+    // Function to toggle important status
     const toggleImportant = () => {
-        setImportantTask(prevState => !prevState);
         const tasks = JSON.parse(localStorage.getItem("tasks")) || [];
         const taskIndex = tasks.findIndex((task) => task.id === id);
+
+
+        setImportantTask(prevState => !prevState);
+
         if (taskIndex !== -1) {
+
             tasks[taskIndex].isImportant = !tasks[taskIndex].isImportant;
-            localStorage.setItem("tasks", JSON.stringify(tasks)); // Update localStorage
+        } else {
+
+            const newTask = {
+                id,
+                task,
+
+
+                isImportant: !importantTask, 
+            };
+            tasks.push(newTask);
         }
+        localStorage.setItem("tasks", JSON.stringify(tasks)); // Update localStorage
     };
 
     return (
@@ -83,16 +100,14 @@ function Task({ task, date, description, id, startTime, endTime, status }) {
             </div>
 
             <div className="flex space-x-4 items-center">
-                <button className="p-2 rounded-full bg-gray-700 hover:bg-blue-600 text-gray-300 hover:text-white transition duration-300" onClick={()=>handleDeleteTask(id)}>
+                <button className="p-2 rounded-full bg-gray-700 hover:bg-blue-600 text-gray-300 hover:text-white transition duration-300" onClick={() => handleDeleteTask(id)}>
                     <MdDelete className='text-2xl' />
                 </button>
                 <label className="swap swap-rotate">
-                    
                     {importantTask ? (
-                        <FaStar className=' text-2xl' onClick={toggleImportant} />
-
+                        <FaStar className='text-2xl' onClick={toggleImportant} />
                     ) : (
-                        <FaRegStar className=' text-2xl' onClick={toggleImportant} />
+                        <FaRegStar className='text-2xl' onClick={toggleImportant} />
                     )}
                 </label>
             </div>

@@ -6,6 +6,7 @@ import Auth from './pages/Auth';
 import { useMainContext } from './contexts/MainContext';
 import Dashboard from './pages/Dashboard';
 import ProtectRoute from './lib/ProtectRoute'
+import Footer from './components/Footer';
 function App() {
   const navigate = useNavigate();
   const { isUserThere, tasks } = useMainContext();
@@ -25,6 +26,7 @@ function App() {
         
       </Routes>
       <Toaster />
+      <Footer />
     </div>
   );
 }

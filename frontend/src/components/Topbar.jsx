@@ -42,7 +42,7 @@ function Topbar() {
             </label>
           </li>
 
-          <li className="w-full lg:w-auto">
+          {/* <li className="w-full lg:w-auto">
             <Link
               to="/profile"
               className="flex items-center gap-2 px-4 py-2 w-full lg:w-auto hover:scale-105 transition-transform duration-300 ease-in-out"
@@ -53,7 +53,7 @@ function Topbar() {
                 </div>
               </div>
             </Link>
-          </li>
+          </li> */}
         </ul>
       </div>
 

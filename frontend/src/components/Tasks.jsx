@@ -8,7 +8,7 @@ function Tasks() {
         <div className='m-10 bg-base-200 p-4 rounded-lg'>
             <div className="p-4">
                 <h2 className="text-2xl font-semibold mb-4">My Tasks</h2>
-                <div className='h-[300px] overflow-y-scroll'>
+                <div className='h-[500px] overflow-y-scroll'>
                 {tasks?.map((task) => {
                     return (
                         <Task key={task._id} task={task.task} description={task.description} date={task.date} id={task._id} startTime={task.startTime} endTime={task.endTime} status={task.status} />

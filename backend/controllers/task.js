@@ -32,7 +32,7 @@ export async function handleAddTask(req, res) {
 export async function fetchTasks(req, res) {
   const userId = req.user._id;
   try {
-    const response = await Task.find({ userId ,status: "Pending" });
+    const response = await Task.find({ userId, status: "Pending" });
     res.status(200).json(response);
   } catch (error) {
     res.status(500).json({ message: "Error fetching tasks" });
@@ -41,9 +41,30 @@ export async function fetchTasks(req, res) {
 export async function fetchCompletedTasks(req, res) {
   const userId = req.user._id;
   try {
-    const response = await Task.find({ userId ,status: "Completed" });
+    const response = await Task.find({ userId, status: "Completed" });
     res.status(200).json(response);
   } catch (error) {
     res.status(500).json({ message: "Error fetching tasks" });
+  }
+}
+export async function handleCompleteTask(req, res) {
+  try {
+    const taskId = req.params.id;
+    if (!taskId) return res.status(400).json({ msg: "No task id provided" });
+    const task = await Task.findById(taskId);
+    if (!task) {
+      return res.status(404).json({ message: "Task not found" });
+    }
+    if (task.userId.toString() !== req.user._id.toString()) {
+      return res
+        .status(403)
+        .json({ msg: "You do not have permission to complete this task" });
+    }
+
+    task.status = task.status === "Pending" ? "Completed" : "Pending";
+    await task.save();
+    res.status(200).json({ message: "Task marked as complete", task });
+  } catch (error) {
+    res.status(500).json({ message: "Error completing task", error });
   }
 }

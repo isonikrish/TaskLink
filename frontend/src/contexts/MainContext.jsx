@@ -7,6 +7,7 @@ export const MainContextProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [isUserThere, setIsUserThere] = useState(false);
     const [tasks, setTasks] = useState([]);
+    const [completedTasks, setCompletedTasks] = useState([])
     async function handleSignup(data, setIsLoading) {
         try {
             setIsLoading(true)
@@ -68,21 +69,37 @@ export const MainContextProvider = ({ children }) => {
     useEffect(() => {
         fetchMe()
     }, [])
-    async function fetchTasks(){
+    async function fetchTasks() {
         try {
-            const res = await axios.get("http://localhost:9294/api/tasks/getTasks",{
+            const res = await axios.get("http://localhost:9294/api/tasks/getTasks", {
                 withCredentials: "true",
             })
-            if(res.status === 200){
+            if (res.status === 200) {
                 setTasks(res.data);
             }
         } catch (error) {
             console.log(error)
         }
-       
+
+    }
+    useEffect(() => {
+        fetchTasks();
+    }, [isUserThere])
+    async function fetchCompletedTasks() {
+        try {
+            const res = await axios.get("http://localhost:9294/api/tasks/getCompletedTasks", {
+                withCredentials: "true",
+            })
+            if (res.status === 200) {
+                setCompletedTasks(res.data);
+            }
+        } catch (error) {
+            console.log(error)
+        }
+
     }
     useEffect(()=>{
-        fetchTasks();
+        fetchCompletedTasks()
     },[isUserThere])
     async function handleAddTask(data, setIsLoading) {
         try {
@@ -101,9 +118,29 @@ export const MainContextProvider = ({ children }) => {
             setIsLoading(false)
         }
     }
-    
+    async function handleTaskStatus(id) {
+        try {
+            if (!id) {
+                toast.error("Task ID is missing.");
+                return;
+            }
+
+            const res = await axios.put(`http://localhost:9294/api/tasks/changeTaskStatus/${id}`,
+                {}, {
+                withCredentials: true
+            })
+            if (res.status === 200) {
+                toast.success("Task status changed successfully!")
+                fetchCompletedTasks();
+                fetchTasks();
+            }
+        }
+        catch (error) {
+            toast.error(`Error: ${error.message}`);
+        }
+    }
     return (
-        <MainContext.Provider value={{ handleSignup, handleLogin, handleLogout, fetchMe, user, isUserThere, handleAddTask, tasks, fetchTasks }}>
+        <MainContext.Provider value={{ handleSignup, handleLogin, handleLogout, fetchMe, user, isUserThere, handleAddTask, tasks, fetchTasks , handleTaskStatus, fetchCompletedTasks, completedTasks}}>
             {children}
         </MainContext.Provider>
     )

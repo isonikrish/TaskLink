@@ -8,6 +8,9 @@ export const MainContextProvider = ({ children }) => {
     const [isUserThere, setIsUserThere] = useState(false);
     const [tasks, setTasks] = useState([]);
     const [completedTasks, setCompletedTasks] = useState([])
+    const [allTasks, setAllTasks] = useState([]);
+
+
     async function handleSignup(data, setIsLoading) {
         try {
             setIsLoading(true)
@@ -98,9 +101,22 @@ export const MainContextProvider = ({ children }) => {
         }
 
     }
-    useEffect(()=>{
+    useEffect(() => {
         fetchCompletedTasks()
-    },[isUserThere])
+    }, [isUserThere])
+    async function fetchAllTasks(){
+        try {
+            const res = await axios.get("http://localhost:9294/api/tasks/getAllTasks", {
+                withCredentials: "true",
+            })
+            if (res.status === 200) {
+                setAllTasks(res.data);
+                
+            }
+        } catch (error) {
+            console.log(error)
+        }
+    }
     async function handleAddTask(data, setIsLoading) {
         try {
             setIsLoading(true)
@@ -110,6 +126,7 @@ export const MainContextProvider = ({ children }) => {
             if (res.status === 201) {
                 toast.success("Task Created")
                 fetchTasks()
+                fetchAllTasks();
             }
 
         } catch (error) {
@@ -139,8 +156,27 @@ export const MainContextProvider = ({ children }) => {
             toast.error(`Error: ${error.message}`);
         }
     }
+
+    async function handleDeleteTask(id) {
+        try {
+            const res = await axios.delete(`http://localhost:9294/api/tasks/delete/${id}`, {
+                withCredentials: true
+            });
+            if (res.status === 200) {
+                toast.success("Task deleted successfully")
+                fetchTasks();
+                fetchCompletedTasks()
+            }
+        } catch (error) {
+            toast.error(error.response.data.msg)
+        }
+    }
+    
+    useEffect(()=>{
+        fetchAllTasks()
+    },[])
     return (
-        <MainContext.Provider value={{ handleSignup, handleLogin, handleLogout, fetchMe, user, isUserThere, handleAddTask, tasks, fetchTasks , handleTaskStatus, fetchCompletedTasks, completedTasks}}>
+        <MainContext.Provider value={{ handleSignup, handleLogin, handleLogout, fetchMe, user, isUserThere, handleAddTask, tasks, fetchTasks, handleTaskStatus, fetchCompletedTasks, completedTasks, handleDeleteTask, allTasks }}>
             {children}
         </MainContext.Provider>
     )

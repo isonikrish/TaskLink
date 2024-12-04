@@ -68,3 +68,34 @@ export async function handleCompleteTask(req, res) {
     res.status(500).json({ message: "Error completing task", error });
   }
 }
+export async function deleteTask(req,res){
+  const userId = req.user._id;
+  const taskId = req.params.id;
+  try {
+   
+    const task = await Task.findById(taskId);
+    if (!task) {
+      return res.status(404).json({ msg: "Task not found" });
+    }
+    
+    if (task.userId.toString() !== userId.toString()) {
+      return res.status(403).json({ msg: "You are not authorized to delete this task" });
+    }
+
+    
+    await Task.findByIdAndDelete(taskId);
+    res.status(200).json({ msg: "Deleted task successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching tasks" });
+  }
+}
+export async function fetchAllTasks(req,res){
+  const userId = req.user._id;
+  try {
+    const response = await Task.find({ userId });
+    res.status(200).json(response);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching tasks" });
+  }
+
+}

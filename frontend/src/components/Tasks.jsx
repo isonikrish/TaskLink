@@ -1,10 +1,9 @@
-import React from 'react'
+import React, { useState } from 'react'
 import Task from './Task'
 import { useMainContext } from '../contexts/MainContext'
 
 function Tasks() {
     const { tasks, completedTasks } = useMainContext()
-
     return (
         <div className='m-10 bg-base-200 p-4 rounded-lg'>
             <div className="p-4">

@@ -5,8 +5,9 @@ import { useMainContext } from '../contexts/MainContext';
 
 function Task({ task, date, description, id, startTime, endTime, status }) {
     const [finalDate, setFinalDate] = useState(null);
-    const [loading, setLoading] = useState(false);  // Loading state
-    const { handleTaskStatus } = useMainContext();
+    const [loading, setLoading] = useState(false); 
+    const { handleTaskStatus,handleDeleteTask } = useMainContext();
+    const [importantTask, setImportantTask] = useState(false);
 
     function updateDate() {
         const currentDate = new Date();
@@ -25,22 +26,46 @@ function Task({ task, date, description, id, startTime, endTime, status }) {
     const formattedEndTime = new Date(endTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
     const toggleStatus = async () => {
-        setLoading(true);  
-                await handleTaskStatus(id);
+        setLoading(true);
+        await handleTaskStatus(id);
         setLoading(false);
+    };
+
+    const getImportantTasks = () => {
+        const tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+        const taskItem = tasks.find((task) => task.id === id);  
+        if (taskItem && taskItem.isImportant) {
+            setImportantTask(true);
+        } else {
+            setImportantTask(false);
+        }
+    };
+
+    useEffect(() => {
+        getImportantTasks();
+    }, [id]);
+
+    const toggleImportant = () => {
+        setImportantTask(prevState => !prevState);
+        const tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+        const taskIndex = tasks.findIndex((task) => task.id === id);
+        if (taskIndex !== -1) {
+            tasks[taskIndex].isImportant = !tasks[taskIndex].isImportant;
+            localStorage.setItem("tasks", JSON.stringify(tasks)); // Update localStorage
+        }
     };
 
     return (
         <div className="bg-base-300 shadow-lg rounded-lg p-5 flex justify-between items-center border border-gray-700 hover:shadow-xl transition-shadow duration-300 mt-3">
             <div className="flex items-center space-x-4">
-                <button 
+                <button
                     className={`task-button p-2 rounded-full transition duration-300 ${loading ? 'opacity-50 cursor-not-allowed' : 'hover:bg-green-600 text-gray-300 hover:text-white'}`}
                     onClick={toggleStatus}
                     disabled={loading}  // Disable button while loading
                 >
                     <span className="text-2xl">
                         {loading ? (
-                            <span className="loading loading-spinner loading-sm"></span>  // Daisy UI spinner
+                            <span className="loading loading-spinner loading-sm"></span>
                         ) : status === "Pending" ? (
                             <FaRegCircle />
                         ) : (
@@ -58,13 +83,17 @@ function Task({ task, date, description, id, startTime, endTime, status }) {
             </div>
 
             <div className="flex space-x-4 items-center">
-                <button className="p-2 rounded-full bg-gray-700 hover:bg-blue-600 text-gray-300 hover:text-white transition duration-300">
+                <button className="p-2 rounded-full bg-gray-700 hover:bg-blue-600 text-gray-300 hover:text-white transition duration-300" onClick={()=>handleDeleteTask(id)}>
                     <MdDelete className='text-2xl' />
                 </button>
                 <label className="swap swap-rotate">
-                    <input type="checkbox" />
-                    <FaRegStar className='swap-on text-2xl' />
-                    <FaStar className='swap-off text-2xl' />
+                    
+                    {importantTask ? (
+                        <FaStar className=' text-2xl' onClick={toggleImportant} />
+
+                    ) : (
+                        <FaRegStar className=' text-2xl' onClick={toggleImportant} />
+                    )}
                 </label>
             </div>
         </div>

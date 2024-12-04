@@ -5,9 +5,11 @@ export const MainContext = createContext();
 
 export const MainContextProvider = ({ children }) => {
     const [user, setUser] = useState(null);
-    const [isUserThere, setIsUserThere] = useState(false)
-    async function handleSignup(data) {
+    const [isUserThere, setIsUserThere] = useState(false);
+    const [tasks, setTasks] = useState([]);
+    async function handleSignup(data, setIsLoading) {
         try {
+            setIsLoading(true)
             const res = await axios.post('http://localhost:9294/api/auth/signup', data, {
                 withCredentials: true
             });
@@ -17,10 +19,13 @@ export const MainContextProvider = ({ children }) => {
             }
         } catch (error) {
             toast.error(error.response.data.msg)
+        } finally {
+            setIsLoading(false)
         }
     }
-    async function handleLogin(data) {
+    async function handleLogin(data, setIsLoading) {
         try {
+            setIsLoading(true)
             const res = await axios.post('http://localhost:9294/api/auth/login', data, {
                 withCredentials: true
             });
@@ -30,11 +35,13 @@ export const MainContextProvider = ({ children }) => {
             }
         } catch (error) {
             toast.error(error.response.data.msg)
+        } finally {
+            setIsLoading(false)
         }
     }
     async function handleLogout() {
         try {
-            const res = await axios.post('http://localhost:9294/api/auth/logout', {
+            const res = await axios.post('http://localhost:9294/api/auth/logout', {}, {
                 withCredentials: true
             });
             if (res.status === 201) {
@@ -61,21 +68,42 @@ export const MainContextProvider = ({ children }) => {
     useEffect(() => {
         fetchMe()
     }, [])
-    async function handleAddTask(data) {
+    async function fetchTasks(){
         try {
+            const res = await axios.get("http://localhost:9294/api/tasks/getTasks",{
+                withCredentials: "true",
+            })
+            if(res.status === 200){
+                setTasks(res.data);
+            }
+        } catch (error) {
+            console.log(error)
+        }
+       
+    }
+    useEffect(()=>{
+        fetchTasks();
+    },[isUserThere])
+    async function handleAddTask(data, setIsLoading) {
+        try {
+            setIsLoading(true)
             const res = await axios.post('http://localhost:9294/api/tasks/task', data, {
                 withCredentials: true
             });
             if (res.status === 201) {
                 toast.success("Task Created")
+                fetchTasks()
             }
 
         } catch (error) {
             toast.error("Error in creating task")
+        } finally {
+            setIsLoading(false)
         }
     }
+    
     return (
-        <MainContext.Provider value={{ handleSignup, handleLogin, handleLogout, fetchMe, user, isUserThere,handleAddTask }}>
+        <MainContext.Provider value={{ handleSignup, handleLogin, handleLogout, fetchMe, user, isUserThere, handleAddTask, tasks, fetchTasks }}>
             {children}
         </MainContext.Provider>
     )

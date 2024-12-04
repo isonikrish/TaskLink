@@ -11,13 +11,10 @@ function Dashboard() {
     return (
         <div>
             <Topbar />
-            <div>
-                <h2>Your Tasks</h2>
-            </div>
 
-            <div className='flex gap-3'>
+            <div className='flex gap-3 m-10'>
                 <button
-                    className="btn btn-neutral"
+                    className="btn bg-base-200"
                     onClick={() => document.getElementById('my_modal_3').showModal()}
                 >
                     <FaPlus /> New Task

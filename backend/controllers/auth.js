@@ -67,7 +67,13 @@ export async function handleLogin(req, res) {
 }
 export async function handleLogout(req, res) {
   try {
-    res.cookie("jwt", "", { maxAge: 0 });
+    res.cookie("jwt", "", {
+      maxAge: 0,
+      httpOnly: true,
+      sameSite: "strict",
+      secure: false,
+      path: "/", 
+    });
     res.status(201).json({ msg: "Logout Successfull" });
   } catch (error) {
     res.status(500).json({ msg: "Internal Server Error" });

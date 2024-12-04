@@ -8,7 +8,7 @@ import Dashboard from './pages/Dashboard';
 import ProtectRoute from './lib/ProtectRoute'
 function App() {
   const navigate = useNavigate();
-  const { isUserThere } = useMainContext();
+  const { isUserThere, tasks } = useMainContext();
 
   useEffect(() => {
     if (!isUserThere) {

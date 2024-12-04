@@ -5,7 +5,8 @@ import { FiCalendar, FiTag } from 'react-icons/fi';
 import { useMainContext } from '../contexts/MainContext';
 
 function AddTask() {
-    const [formData, setFormData] = useState({
+  const [isLoading, setIsLoading] = useState(false);
+  const [formData, setFormData] = useState({
     task: '',
     description: '',
     date: '',
@@ -27,13 +28,13 @@ function AddTask() {
 
     setFormData((prev) => ({
       ...prev,
-      [name]: value ? value.toISOString() : '', 
+      [name]: value ? value.toISOString() : '',
     }));
   };
 
   const handleAdd = () => {
 
-    handleAddTask(formData);
+    handleAddTask(formData, setIsLoading);
 
     // Reset form after submission
     setFormData({
@@ -112,13 +113,16 @@ function AddTask() {
               />
             </div>
           </div>
-
-          <button
+          {isLoading ? <button className="btn btn-primary w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition-all duration-200">
+            <span className="loading loading-spinner"></span>
+            loading
+          </button> : <button
             className="btn btn-primary w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition-all duration-200"
             onClick={handleAdd}
           >
             Add Task
-          </button>
+          </button>}
+
         </div>
       </div>
     </div>

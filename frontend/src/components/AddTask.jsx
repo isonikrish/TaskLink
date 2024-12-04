@@ -16,7 +16,6 @@ function AddTask() {
 
   const { handleAddTask } = useMainContext();
 
-
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -24,16 +23,30 @@ function AddTask() {
       [name]: value,
     }));
   };
-  const handleDateChange = (name, value) => {
 
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value ? value.toISOString() : '',
-    }));
+  const handleDateChange = (name, value) => {
+    if (value) {
+      setFormData((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
+    } 
+  };
+
+  const handleTimeChange = (name, value) => {
+    if (value) {
+      const updatedDate = new Date(formData.date); // Use the existing date as the base
+      updatedDate.setHours(value.getHours());
+      updatedDate.setMinutes(value.getMinutes());
+      const timeISOString = updatedDate.toISOString();
+      setFormData((prev) => ({
+        ...prev,
+        [name]: timeISOString,
+      }));
+    }
   };
 
   const handleAdd = () => {
-
     handleAddTask(formData, setIsLoading);
 
     // Reset form after submission
@@ -81,7 +94,7 @@ function AddTask() {
               name="date"
               className="input input-bordered w-full pl-10 rounded-lg cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-400"
               value={formData.date}
-              onChange={handleInputChange}
+              onChange={(e) => handleDateChange('date', e.target.value)}
             />
           </div>
 
@@ -90,7 +103,7 @@ function AddTask() {
               <label className="text-gray-500 mb-1">From</label>
               <DatePicker
                 selected={formData.startTime ? new Date(formData.startTime) : null}
-                onChange={(time) => handleDateChange('startTime', time)}
+                onChange={(time) => handleTimeChange('startTime', time)}
                 showTimeSelect
                 showTimeSelectOnly
                 timeIntervals={15}
@@ -103,7 +116,7 @@ function AddTask() {
               <label className="text-gray-500 mb-1">To</label>
               <DatePicker
                 selected={formData.endTime ? new Date(formData.endTime) : null}
-                onChange={(time) => handleDateChange('endTime', time)}
+                onChange={(time) => handleTimeChange('endTime', time)}
                 showTimeSelect
                 showTimeSelectOnly
                 timeIntervals={15}
@@ -113,16 +126,20 @@ function AddTask() {
               />
             </div>
           </div>
-          {isLoading ? <button className="btn btn-primary w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition-all duration-200">
-            <span className="loading loading-spinner"></span>
-            loading
-          </button> : <button
-            className="btn btn-primary w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition-all duration-200"
-            onClick={handleAdd}
-          >
-            Add Task
-          </button>}
 
+          {isLoading ? (
+            <button className="btn btn-primary w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition-all duration-200">
+              <span className="loading loading-spinner"></span>
+              loading
+            </button>
+          ) : (
+            <button
+              className="btn btn-primary w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition-all duration-200"
+              onClick={handleAdd}
+            >
+              Add Task
+            </button>
+          )}
         </div>
       </div>
     </div>

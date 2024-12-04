@@ -4,6 +4,7 @@ import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import { useMainContext } from '../contexts/MainContext';
+import moment from 'moment';  // Import moment to handle time zone conversion
 
 function CalendarView() {
     const { allTasks } = useMainContext();
@@ -11,16 +12,30 @@ function CalendarView() {
 
     useEffect(() => {
         const formattedEvents = allTasks.map(task => {
+            const localStartTime = moment.utc(task.startTime).local();
+            const localEndTime = moment.utc(task.endTime).local();
+            
+            // Convert date to the local date
+            const localDate = moment.utc(task.date).local().format('YYYY-MM-DD');
+            
+            console.log('Local Start Time:', localStartTime.toISOString());  // Log local start time
+            console.log('Local End Time:', localEndTime.toISOString());      // Log local end time
+    
             return {
                 title: task.task,
-                start: task.startTime,
-                end: task.endTime,
+                start: localStartTime.toISOString(),
+                end: localEndTime.toISOString(),
                 description: task.description,
-                status: task.status,  // Ensure the status is here
+                status: task.status,
+                date: localDate,  // Store the local date for consistency
             };
         });
+    
+        console.log('Formatted Events:', formattedEvents);  // Log the final events array
         setEvents(formattedEvents);
     }, [allTasks]);
+    
+    
 
     return (
         <div className="calendar-container premium-calendar mt-20 p-5 rounded-2xl shadow-2xl">
@@ -33,8 +48,8 @@ function CalendarView() {
                     center: 'title',
                     right: 'dayGridMonth,timeGridWeek,timeGridDay',
                 }}
-                editable={true}
-                droppable={true}
+                editable={false}
+                droppable={false}
                 allDayText="All Day"
                 eventClassNames={(event) => {
                     const status = event.event.extendedProps?.status;

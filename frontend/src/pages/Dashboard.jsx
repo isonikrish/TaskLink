@@ -15,7 +15,7 @@ function Dashboard() {
             {menu !== "calendar" ?
                 <>
 
-                    <div className='flex gap-3 m-10'>
+                    <div className='md:flex md:gap-3 m-10 flex justify-end'>
                         <button
                             className="btn bg-base-200"
                             onClick={() => document.getElementById('my_modal_3').showModal()}

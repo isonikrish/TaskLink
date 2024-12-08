@@ -65,7 +65,7 @@ function Task({ task, date, description, id, startTime, endTime, status }) {
                 task,
 
 
-                isImportant: !importantTask, 
+                isImportant: !importantTask,
             };
             tasks.push(newTask);
         }
@@ -73,12 +73,13 @@ function Task({ task, date, description, id, startTime, endTime, status }) {
     };
 
     return (
-        <div className="bg-base-300 shadow-lg rounded-lg p-5 flex justify-between items-center border border-gray-700 hover:shadow-xl transition-shadow duration-300 mt-3">
+        <div className="bg-base-300 shadow-lg rounded-lg p-5 flex flex-col md:flex-row md:justify-between items-start md:items-center border border-gray-700 hover:shadow-xl transition-shadow duration-300 mt-3 space-y-3 md:space-y-0">
+
             <div className="flex items-center space-x-4">
                 <button
                     className={`task-button p-2 rounded-full transition duration-300 ${loading ? 'opacity-50 cursor-not-allowed' : 'hover:bg-green-600 text-gray-300 hover:text-white'}`}
                     onClick={toggleStatus}
-                    disabled={loading}  // Disable button while loading
+                    disabled={loading}
                 >
                     <span className="text-2xl">
                         {loading ? (
@@ -90,10 +91,14 @@ function Task({ task, date, description, id, startTime, endTime, status }) {
                         )}
                     </span>
                 </button>
-                <div className="text-lg font-medium text-gray-200 flex flex-col">
+                <div className="text-lg font-medium text-gray-200 flex flex-col space-y-1">
+
                     {status === "Pending" ? <span>{task}</span> : <span className='line-through'>{task}</span>}
-                    <div className="flex items-center gap-3 mt-2">
-                        <div className="badge badge-primary p-2 text-xs">{finalDate}</div>
+                    <div className="md:flex md:items-center md:gap-3 md:mt-2">
+                        <div className="badge badge-primary md:p-2 md:text-xs text-[10px] inline-flex items-center">
+                            {finalDate}
+                        </div>
+
                         <div className="text-sm text-gray-400">{`${formattedStartTime} - ${formattedEndTime}`}</div>
                     </div>
                 </div>

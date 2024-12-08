@@ -38,7 +38,7 @@ function CalendarView() {
     
 
     return (
-        <div className="calendar-container premium-calendar mt-20 p-5 rounded-2xl shadow-2xl">
+        <div className="md:calendar-container premium-calendar mt-20 p-5 rounded-2xl shadow-2xl">
             <FullCalendar
                 plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
                 initialView="dayGridMonth"

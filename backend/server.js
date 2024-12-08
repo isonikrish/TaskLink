@@ -11,7 +11,7 @@ import taskRoutes from './routes/task.js'
 const app = express();
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: process.env.DOMAIN,
     credentials: true,
   })
 );
